@@ -1,19 +1,15 @@
-const User = require('../models/User');
+const mongoose = require('mongoose');
 
 exports.keepAlive = async (req, res) => {
   try {
-    // Query ringan (murah)
-    await User.findOne().select('_id');
+    const state = mongoose.connection.readyState;
 
     res.json({
       status: 'ok',
-      message: 'MongoDB cluster is awake 🚀',
+      mongoState: state, // 1 = connected
       time: new Date()
     });
   } catch (err) {
-    res.status(500).json({
-      status: 'error',
-      message: err.message
-    });
+    res.status(500).json({ status: 'error', message: err.message });
   }
 };

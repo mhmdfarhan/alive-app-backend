@@ -1,20 +1,19 @@
 const express = require('express');
 const cors = require('cors');
-
-require('./config/database');
-require('./jobs/watchdog.cron');
-
-const userRoutes = require('./routes/user.routes');
-
-const systemRoutes = require('./routes/system.routes');
+const connectDB = require('./config/database');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', userRoutes);
+// Middleware koneksi DB
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
-app.use('/api', systemRoutes);
+app.use('/api', require('./routes/user.routes'));
+app.use('/api', require('./routes/system.routes'));
 
 module.exports = app;
